@@ -664,10 +664,21 @@ public class Ventana extends JFrame {
 
                             matrizIn[xx][indiceAristas] = 1;
                             matrizIn[yy][indiceAristas] = 1;
-
+                            int n1=Integer.parseInt(nodoSelec1.getNombre());
+                            int n2=Integer.parseInt(nodoSelec2.getNombre());
                             Arista arista = new Arista(nodoSelec1, nodoSelec2);
-                            nodoSelec1.agregarArista(arista);
-                            nodoSelec2.agregarArista(arista);
+                            Arista arista2 = new Arista(nodoSelec2, nodoSelec1);
+                            if(n1>n2){
+                                nodoSelec2.agregarArista(arista2);
+                            }
+                            else{
+               
+                                nodoSelec1.agregarArista(arista);
+                            }
+                            
+                        
+                            
+                            
                             aristas[indiceAristas] = arista;
                             indiceAristas++;
 
@@ -1012,7 +1023,15 @@ public class Ventana extends JFrame {
                    // JOptionPane.showMessageDialog(null, "uno o ambos nodos no se encuentran creados");
                 }
         }
-        dijkstra.mostrarRuta(inicial, destino);
+        int n1=Integer.parseInt(nodoInicial);
+        int n2=Integer.parseInt(nodoDestino);
+        if(n1>n2){
+            dijkstra.mostrarRuta(destino, inicial);
+        }
+        else{
+            dijkstra.mostrarRuta(inicial, destino);
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
