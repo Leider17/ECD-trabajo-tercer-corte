@@ -108,6 +108,10 @@ public class Nodo {
     public void colorSobreNodo() {
         this.colorNodo = Ventana.COLOR_SOBRE_NODO;
     }
+    public void resetearDistancia(){
+        this.distancia=Double.POSITIVE_INFINITY;
+        previo=null;
+    }
     
 
 }

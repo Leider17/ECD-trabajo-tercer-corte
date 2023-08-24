@@ -9,13 +9,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author leide
  */
 public class dijkstra {
-     public static void calcularRutaMasCorta(Nodo nodoInicial) {
+
+    public static void calcularRutaMasCorta(Nodo nodoInicial) {
         nodoInicial.distancia = 0;
         PriorityQueue<Nodo> colaPrioridad = new PriorityQueue<>((n1, n2) -> Double.compare(n1.distancia, n2.distancia));
         colaPrioridad.add(nodoInicial);
@@ -28,9 +30,9 @@ public class dijkstra {
                 double distanciaTotal = nodoActual.distancia + arista.getDistancia();
 
                 if (distanciaTotal < nodoDestino.distancia) {
-                    colaPrioridad.remove(nodoDestino);
+                    //colaPrioridad.remove(nodoDestino);
                     nodoDestino.distancia = distanciaTotal;
-                    nodoDestino.previo= nodoActual;
+                    nodoDestino.previo = nodoActual;
                     colaPrioridad.add(nodoDestino);
                 }
             }
@@ -45,15 +47,29 @@ public class dijkstra {
         Collections.reverse(camino);
         return camino;
     }
-    public static void mostrarRuta(Nodo inicial,Nodo destino ){
+
+    public static void mostrarRuta(Nodo inicial, Nodo destino) {
+
+        for (Nodo nodo : Ventana.nodos) {
+            if (nodo != null) {
+                nodo.resetearDistancia();
+                for (Arista arista : nodo.obtenerAristas()) {
+                    arista.calcularDistancia();
+                }
+            }
+        }
         calcularRutaMasCorta(inicial);
         List<Nodo> camino = obtenerCaminoMasCorto(destino);
-         
-        for (Nodo nodo : camino) {
-            System.out.print(nodo.getNombre() + " ");
+
+        if (destino.distancia == Double.POSITIVE_INFINITY) {
+            JOptionPane.showMessageDialog(null, "El agua no llego a su destino porque no existen rutas entre los puntos");
+        } else {
+            for (Nodo nodo : camino) {
+                System.out.print(nodo.getNombre() + " ");
+            }
+            System.out.println("\nDistancia total: " + destino.distancia);
         }
-        System.out.println("\nDistancia total: " + destino.distancia);
+
     }
- 
- 
+
 }

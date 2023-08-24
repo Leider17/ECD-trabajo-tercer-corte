@@ -16,27 +16,32 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
+
 /**
- * Crea un lienzo en el cual se puede pintar y actualizar el grafo
- * Diciembre 19 2020
+ * Crea un lienzo en el cual se puede pintar y actualizar el grafo Diciembre 19
+ * 2020
+ *
  * @author WILMER RODRIGUEZ S
  */
 public class Lienzo extends JPanel {
 
     private Nodo[] nodos;
     private Arista aristas[];
-     private BufferedImage backgroundImage;
-     
+    private boolean camino;
+    private Arista[] aris;
+    private BufferedImage backgroundImage;
+
     /**
      * Crea un objeto de tipo JPanel para simular lienzo
      *
      * @param t Numero de nodos que soporta el vector
      */
     public Lienzo(int t) {
-        
+
         nodos = new Nodo[t];
         aristas = new Arista[t * 2];
     }
+
     /**
      * permite el cambio de la imagen de fondo
      *
@@ -46,6 +51,7 @@ public class Lienzo extends JPanel {
         this.backgroundImage = backgroundImage;
         repaint();
     }
+
     /**
      * pinta la imagen de fondo en el Jpanel
      *
@@ -104,7 +110,7 @@ public class Lienzo extends JPanel {
         //Si la anchura y la altura son iguales, se dibuja la circunferencia.
         graphics.fillOval(n1.getX() - n1.getD() / 2, n1.getY() - n1.getD() / 2, n1.getD(), n1.getD()); // relleno del círculo
 
-        graphics.setColor(Color.RED);
+        graphics.setColor(Color.red);
         graphics.setFont(new java.awt.Font("Segoe UI", 0, 15));
         //Dibuja la string str, empieza en el punto (x,y). x define la posición de la izquierda de la String. y define la altura para la línea base 
         graphics.drawString(n1.getNombre(), n1.getX() - n1.getD() / 2, n1.getY() - n1.getD() / 2); // *** nombre del vértice
@@ -125,13 +131,25 @@ public class Lienzo extends JPanel {
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         // dar color de la linea
-        Arista arista=new Arista(n1, n2);
-        graphics.setColor(Color.blue);
+        Arista arista = new Arista(n1, n2);
+        graphics.setColor(Color.BLACK);
         // dar grosor de la linea
         graphics.setStroke(new BasicStroke((int) (Ventana.ANCHO * 0.002)));
         // Pintar la linea
         graphics.drawLine(n1.getX(), n1.getY(), n2.getX(), n2.getY());
-        graphics.drawString(String.format("%.2f", arista.getDistancia()) , n1.getX()+((n2.getX()-n1.getX())/2),n1.getY()+((n2.getY()-n1.getY())/2));
+        graphics.setColor(Color.white);
+        graphics.setStroke(new BasicStroke((int) (Ventana.ANCHO * 0.008)));
+        graphics.drawString(String.format("%.2f", arista.getDistancia()), n1.getX() + ((n2.getX() - n1.getX()) / 2), n1.getY() + ((n2.getY() - n1.getY()) / 2));
+        if (camino == true) {
+            for (Arista a : aris) {
+                n1 = a.getN1();
+                n2 = a.getN2();
+                graphics.setColor(Color.BLUE);
+                graphics.setStroke(new BasicStroke((int) (Ventana.ANCHO * 0.004)));
+                graphics.drawLine(n1.getX(), n1.getY(), n2.getX(), n2.getY());
+                
+            }
+        }
     }
 
     /**
@@ -150,6 +168,16 @@ public class Lienzo extends JPanel {
      */
     public void setAristas(Arista[] aristas) {
         this.aristas = aristas;
+    }
+
+    public void activarCamino(Arista[] aris) {
+        //Para pintar el camino
+        this.camino = true;
+        this.aris = aris;
+    }
+
+    public void desactivarCamino() {//Para no pintar el camino luego de borrarlo
+        this.camino = false;
     }
 
 }

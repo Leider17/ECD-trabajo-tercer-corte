@@ -36,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -544,12 +545,16 @@ public class Ventana extends JFrame {
 
     static int buscaIndiceNodo(Nodo[] v, int in, String h) {
         int j;
+
         for (j = 0; j < in; j++) {
             //equalsIgnoreCase() Compara dos strings para ver si son iguales
             //ignorando las diferencias entre mayúsculas y minúsculas
-            if (v[j].getNombre().equalsIgnoreCase(h)) {
-                return j;
+            if (v[j] != null) {
+                if (v[j].getNombre().equalsIgnoreCase(h)) {
+                    return j;
+                }
             }
+
         }
         return -1;
     }
@@ -628,7 +633,7 @@ public class Ventana extends JFrame {
                 Nodo nodo = new Nodo(x, y, nombre);
                 nodos[indiceNodos] = nodo;
                 indiceNodos++;
-
+                lienzo.desactivarCamino(); 
                 pintarGrafo();
                 /*
                 jTextArea1.setText(mostrarAd(matrizAd, indiceNodos));
@@ -664,24 +669,16 @@ public class Ventana extends JFrame {
 
                             matrizIn[xx][indiceAristas] = 1;
                             matrizIn[yy][indiceAristas] = 1;
-                            int n1=Integer.parseInt(nodoSelec1.getNombre());
-                            int n2=Integer.parseInt(nodoSelec2.getNombre());
+                            int n1 = Integer.parseInt(nodoSelec1.getNombre());
+                            int n2 = Integer.parseInt(nodoSelec2.getNombre());
                             Arista arista = new Arista(nodoSelec1, nodoSelec2);
                             Arista arista2 = new Arista(nodoSelec2, nodoSelec1);
-                            if(n1>n2){
-                                nodoSelec2.agregarArista(arista2);
-                            }
-                            else{
-               
-                                nodoSelec1.agregarArista(arista);
-                            }
-                            
-                        
-                            
-                            
+                            nodoSelec1.agregarArista(arista);
+                            nodoSelec2.agregarArista(arista2);
+
                             aristas[indiceAristas] = arista;
                             indiceAristas++;
-
+                            lienzo.desactivarCamino(); 
                             pintarGrafo();
                         } catch (Exception e) {
                             JOptionPane.showMessageDialog(null, "Error");
@@ -771,18 +768,16 @@ public class Ventana extends JFrame {
             // Actualiza la posicion del nodo que está moviendo, y lo pinta en pantalla
             nodoAMover.actualizarPosicion(e.getPoint());
             nodoAMover.colorSobreNodo();
-            
+
             moviendo = true;
-            
+            lienzo.desactivarCamino();
             pintarGrafo();
         } else {
             // Resetea los valores por defecto, para permitir mover otro nodo luego
             moviendo = false;
             nodoAMover = null;
         }
-        
-        
-        
+
     }
 
     /**
@@ -828,6 +823,7 @@ public class Ventana extends JFrame {
          */
         nodos = new Nodo[t];
         aristas = new Arista[t];
+        lienzo.desactivarCamino();
         pintarGrafo();
 
         matrizAd = new int[t][t];
@@ -921,6 +917,7 @@ public class Ventana extends JFrame {
         jTextArea3.setText(definicion(nodos, indiceNodos, aristas, indiceAristas));
          */
         // Repintar el grafo
+        lienzo.desactivarCamino(); 
         pintarGrafo();
 
         // Devolver el foco y eliminar el texto
@@ -962,6 +959,7 @@ public class Ventana extends JFrame {
         jTextArea3.setText(definicion(nodos, indiceNodos, aristas, indiceAristas));
          */
         // Repintar el grafo
+        lienzo.desactivarCamino(); 
         pintarGrafo();
 
         // Devolver el foco y eliminar el texto
@@ -1004,34 +1002,66 @@ public class Ventana extends JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String nodoInicial = inicio.getText();
         String nodoDestino = destino.getText();
+
         if (nodoInicial.isEmpty() || nodoDestino.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Debe ingresar el nombre de los nodos a verificar la ruta más corta");
             return;
         }
-        Nodo inicial=null;
-        Nodo destino=null;
-        for (int i = 0; i < nodos.length; i++) {
-            if (nodos[i] != null) {
-                if (nodoInicial.equalsIgnoreCase(nodos[i].getNombre())) {
-                     inicial = nodos[i];
-                }
-                else if (nodoDestino.equalsIgnoreCase(nodos[i].getNombre())) {
-                     destino = nodos[i];
-                }
-                
-            }else{
-                   // JOptionPane.showMessageDialog(null, "uno o ambos nodos no se encuentran creados");
-                }
+        if (nodos[0] == null) {
+            JOptionPane.showMessageDialog(null, "No hay ningún nodo creado");
+            return;
         }
-        int n1=Integer.parseInt(nodoInicial);
-        int n2=Integer.parseInt(nodoDestino);
-        if(n1>n2){
-            dijkstra.mostrarRuta(destino, inicial);
+        Nodo inicial = null;
+        Nodo destino = null;
+        if (buscaIndiceNodo(nodos, t, nodoInicial) != -1){ 
+            if(buscaIndiceNodo(nodos, t, nodoDestino) != -1 ) {
+            
+            for (int i = 0; i < nodos.length; i++) {
+                if (nodos[i] != null) {
+                    if (nodoInicial.equalsIgnoreCase(nodos[i].getNombre())) {
+                        inicial = nodos[i];
+                    } else if (nodoDestino.equalsIgnoreCase(nodos[i].getNombre())) {
+                        destino = nodos[i];
+                    }
+
+                }
+            }
+            int n1 = Integer.parseInt(nodoInicial);
+            int n2 = Integer.parseInt(nodoDestino);
+            if (n1 > n2) {
+                dijkstra.mostrarRuta(destino, inicial);
+            } else {
+                dijkstra.mostrarRuta(inicial, destino);
+            }
         }
-        else{
-            dijkstra.mostrarRuta(inicial, destino);
+            else {
+            JOptionPane.showMessageDialog(null, "No existe el segundo nodo");
+            return;
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "No existe el primer nodo");
+            return;
+            }
+
+        
+        // Pintar camino
+        List<Nodo> miCamino = dijkstra.obtenerCaminoMasCorto(destino);
+        int[] x = new int[miCamino.size()-1];   // lista de indices aristas
+        String nod1, nod2;
+        
+        for(int i=0; i<miCamino.size()-1; i++){
+            nod1=miCamino.get(i).getNombre();
+            nod2=miCamino.get(i+1).getNombre();
+            x[i]=(buscarArista(nod1, nod2));    // guarda posicion de las aristas del grafo
         }
         
+        Arista[] listArista = new Arista[x.length]; // lista de aristas
+        for(int j=0; j<x.length; j++){      // guarda las aristas como aparecen en el panel
+            listArista[j] = aristas[x[j]];
+        }
+        
+        lienzo.activarCamino(listArista);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
